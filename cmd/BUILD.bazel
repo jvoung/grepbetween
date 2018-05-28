@@ -1,15 +1,15 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
 go_library(
-    name = "gobetween",
-    srcs = ["gobetween.go"],
-    importpath = "github.com/jvoung/gobetween/cmd",
+    name = "grepbetween",
+    srcs = ["grepbetween.go"],
+    importpath = "github.com/jvoung/grepbetween/cmd",
     visibility = ["//visibility:private"],
     deps = ["//:print_between"],
 )
 
 go_binary(
     name = "cmd",
-    embed = [":gobetween"],
+    embed = [":grepbetween"],
     visibility = ["//visibility:public"],
 )

@@ -6,8 +6,10 @@ This is a commandline tool that helps print text between a START marker and an E
 Example
 -------
 
-`let START = "=+ ABCD =+"`
-`let END = "=+ END =+"`
+```
+let START = "=+ ABCD =+"
+let END = "=+ END =+"
+```
 
 and input
 ```
