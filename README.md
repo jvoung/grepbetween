@@ -34,10 +34,7 @@ More stuff
 Yet more stuff
 ```
 
-Future Work
------------
-* extend this to handle multiple start and end pairs
-* have options to include the start/end in output
+One can also specify multiple start and end regexes. In that case, any pair of start/end can match. In the future, this may become more specific and require specific start/end pairs to match.
 
 Corner Cases
 ------------

@@ -7,37 +7,52 @@ import (
 	"regexp"
 )
 
-// PrintBetween prints all lines that are between startRe and endRe pairs.
-// If invert is true, then prints the inverse (lines not between startRe
-// and endRe).
+// PrintBetween prints all lines that are between any pair of patterns
+// in startPatterns and endPatterns. If invert is true, then prints the
+// inverse (lines not between startPatterns and endPatterns).
 func PrintBetween(input *bufio.Scanner, output io.Writer,
-	startRe string, endRe string, invert bool) {
+	startPatterns []string, endPatterns []string, invert bool) {
 	// TODO(jvoung): handle a list of start/end pairs.
 	inMatch := false
 	if invert {
 		inMatch = true
-		startRe, endRe = endRe, startRe
+		startPatterns, endPatterns = endPatterns, startPatterns
 	}
+	startRegexes := compilePatterns(startPatterns)
+	endRegexes := compilePatterns(endPatterns)
 	for input.Scan() {
 		line := input.Text()
 		if inMatch {
-			matched, err := regexp.MatchString(endRe, line)
-			if err != nil {
-				panic(err)
-			}
-			if matched {
+			if anyMatch(endRegexes, line) {
 				inMatch = !inMatch
 				continue
 			}
 			fmt.Fprintln(output, line)
 		} else {
-			matched, err := regexp.MatchString(startRe, line)
-			if err != nil {
-				panic(err)
-			}
-			if matched {
+			if anyMatch(startRegexes, line) {
 				inMatch = !inMatch
 			}
 		}
 	}
+}
+
+func compilePatterns(patterns []string) []*regexp.Regexp {
+	var result []*regexp.Regexp
+	for _, p := range patterns {
+		re, err := regexp.Compile(p)
+		if err != nil {
+			panic(err)
+		}
+		result = append(result, re)
+	}
+	return result
+}
+
+func anyMatch(regexes []*regexp.Regexp, s string) bool {
+	for _, r := range regexes {
+		if r.MatchString(s) {
+			return true
+		}
+	}
+	return false
 }

@@ -46,6 +46,19 @@ third
 	assertPrinting(t, input, startRe, endRe).isEqualTo(expected)
 }
 
+func TestNotQuiteMatch(t *testing.T) {
+	input := inputScanner(`first line
+===STAR_PAT===
+second
+third
+===EN_PAT===
+fourth`)
+	expected := ""
+	startRe := "^.*START.*"
+	endRe := "^.*END.*"
+	assertPrinting(t, input, startRe, endRe).isEqualTo(expected)
+}
+
 func TestPrintBetweenTwice(t *testing.T) {
 	input := inputScanner(`first line
 ===START_PAT===
@@ -100,6 +113,40 @@ third
 	assertPrinting(t, input, startRe, endRe).isEqualTo(expected)
 }
 
+func TestMultiplePatterns(t *testing.T) {
+	input := inputScanner(`first line
+===START===
+second
+third
+===END===
+===STAR===
+fourth
+===EN===
+===XXX===
+fifth
+===YYY===
+sixth
+===START===
+seventh
+===YYY===
+eigth
+===XXX===
+ninth
+===END===
+tenth
+`)
+	expected := `second
+third
+fifth
+seventh
+ninth
+`
+	startPatterns := []string{"START", "XXX"}
+	endPatterns := []string{"END", "YYY"}
+	assertPrintingPatterns(
+		t, input, startPatterns, endPatterns).isEqualTo(expected)
+}
+
 func inputScanner(s string) *bufio.Scanner {
 	return bufio.NewScanner(strings.NewReader(s))
 }
@@ -109,17 +156,27 @@ type stringSubject struct {
 	actual string
 }
 
-func assertPrinting(t *testing.T, input *bufio.Scanner,
-	startRe, endRe string) stringSubject {
+func assertPrinting(
+	t *testing.T, input *bufio.Scanner, startRe, endRe string) stringSubject {
 	output := bytes.Buffer{}
-	PrintBetween(input, &output, startRe, endRe, false)
+	PrintBetween(
+		input, &output, []string{startRe}, []string{endRe}, false)
 	return assertThat(t, output.String())
 }
 
-func assertPrintingInverted(t *testing.T, input *bufio.Scanner,
-	startRe, endRe string) stringSubject {
+func assertPrintingInverted(
+	t *testing.T, input *bufio.Scanner, startRe, endRe string) stringSubject {
 	output := bytes.Buffer{}
-	PrintBetween(input, &output, startRe, endRe, true)
+	PrintBetween(
+		input, &output, []string{startRe}, []string{endRe}, true)
+	return assertThat(t, output.String())
+}
+
+func assertPrintingPatterns(
+	t *testing.T, input *bufio.Scanner,
+	startPs, endPs []string) stringSubject {
+	output := bytes.Buffer{}
+	PrintBetween(input, &output, startPs, endPs, false)
 	return assertThat(t, output.String())
 }
 

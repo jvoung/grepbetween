@@ -13,19 +13,34 @@ import (
 	"github.com/jvoung/grepbetween"
 )
 
+type stringArray []string
+
+func (i *stringArray) String() string {
+	return fmt.Sprint(*i)
+}
+func (i *stringArray) Set(s string) error {
+	*i = append(*i, s)
+	return nil
+}
+
 var (
-	startRe = flag.String("start", "", "Regex for START delimiter (required)")
-	endRe   = flag.String("end", "", "Regex for END delimiter (required)")
+	startRe stringArray
+	endRe   stringArray
 	invert  = flag.Bool("v", false, "Invert matches. Instead of printing "+
 		"everything between START and END, print lines that are not between "+
 		"START and END)")
 )
 
+func init() {
+	flag.Var(&startRe, "start", "Regex for START delimiter (required)")
+	flag.Var(&endRe, "end", "Regex for END delimiter (required)")
+}
+
 func main() {
 	flag.Parse()
-	if *startRe == "" || *endRe == "" {
-		fmt.Printf("must specify a start/end regex (given start=%s, end=%s)",
-			*startRe, *endRe)
+	if len(startRe) == 0 || len(endRe) == 0 {
+		fmt.Printf("must specify a start/end regex (given start=%s, end=%s)\n",
+			startRe, endRe)
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
@@ -47,5 +62,5 @@ func main() {
 		os.Exit(1)
 	}
 	inScan := bufio.NewScanner(input)
-	grepbetween.PrintBetween(inScan, os.Stdout, *startRe, *endRe, *invert)
+	grepbetween.PrintBetween(inScan, os.Stdout, startRe, endRe, *invert)
 }
