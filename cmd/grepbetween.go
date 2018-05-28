@@ -1,15 +1,16 @@
-// This is a tool that helps either *extract* or *filter out* lines of text
-// between a START marker and an END marker.
-// The START and END can be regexes.
+// This is a tool that helps prints all lines between START markers and
+// an END markers. The matching can also be inverted to print all lines
+// that are *not* between the markers.
 
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
 
-	"github.com/jvoung/gobetween"
+	"github.com/jvoung/grepbetween"
 )
 
 var (
@@ -23,7 +24,8 @@ var (
 func main() {
 	flag.Parse()
 	if *startRe == "" || *endRe == "" {
-		fmt.Println("must specify a start/end regex")
+		fmt.Printf("must specify a start/end regex (given start=%s, end=%s)",
+			*startRe, *endRe)
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
@@ -39,9 +41,11 @@ func main() {
 		}
 		defer input.Close()
 	} else {
-		fmt.Println("Can specify at most one input file")
+		fmt.Printf(
+			"Can specify at most one input as argument, given %d arguments",
+			len(remaining))
 		os.Exit(1)
 	}
-	// TODO(jvoung): pass a scanner instead?
-	gobetween.PrintBetween(input, *startRe, *endRe)
+	inScan := bufio.NewScanner(input)
+	grepbetween.PrintBetween(inScan, os.Stdout, *startRe, *endRe, *invert)
 }

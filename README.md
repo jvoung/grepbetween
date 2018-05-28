@@ -1,22 +1,18 @@
 Overview
 --------
 
-This is a commandline tool that helps *extract* or *filter out* lines of
-text between a START marker and an END marker.
-The START and END markers are specified as regexes.
+This is a commandline tool that helps print text between a START marker and an END marker. It can also invert the printing, to print lines that are not between START/END. The START and END markers are regexes.
 
 Example
 -------
 
 `let START = "=+ ABCD =+"`
-
 `let END = "=+ END =+"`
 
 and input
 ```
 Some stuff
-More stuff ==== ABCD ====
-==== ABCD ====
+More stuff
 ==== ABCD ====
 12345
 ==== END ====
@@ -25,16 +21,15 @@ Yet more stuff
 
 Output is
 ```
-Some stuff
-More stuff ==== ABCD ====
-Yet more stuff
+12345
 ```
 
 Or you can invert the match and get as output
 
 ```
-==== ABCD ====
-12345
+Some stuff
+More stuff
+Yet more stuff
 ```
 
 Future Work

@@ -3,13 +3,13 @@ load("@bazel_gazelle//:def.bzl", "gazelle")
 
 gazelle(
     name = "gazelle",
-    prefix = "github.com/jvoung/gobetween",
+    prefix = "github.com/jvoung/grepbetween",
 )
 
 go_library(
     name = "print_between",
     srcs = ["print_between.go"],
-    importpath = "github.com/jvoung/gobetween",
+    importpath = "github.com/jvoung/grepbetween",
     visibility = ["//visibility:public"],
 )
 
